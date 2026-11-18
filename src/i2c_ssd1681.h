@@ -1,0 +1,250 @@
+// i2c_ssd1681.h
+//
+// Written by P.C. @ SparkFun Electronics, April 2026
+//
+// This is a library to control SSD1680/1 e-Paper displays via I2C, using a I2C to SPI Bridge.
+//
+// SparkFun code, firmware, and software is released under the MIT License(http://opensource.org/licenses/MIT).
+//
+// SPDX-License-Identifier: MIT
+//
+//    The MIT License (MIT)
+//
+//    Copyright (c) 2026 SparkFun Electronics
+//    Permission is hereby granted, free of charge, to any person obtaining a copy of this software and
+//    associated documentation files (the "Software"), to deal in the Software without restriction,
+//    including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
+//    and/or sell copies of the Software, and to permit persons to whom the Software is furnished to
+//    do so, subject to the following conditions:
+//    The above copyright notice and this permission notice shall be included in all copies or substantial
+//    portions of the Software.
+//    THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT
+//    NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
+//    IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
+//    WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
+//    SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+
+/*
+ * Header file for the SSD1681 bitmap graphics driver device.
+*/
+
+#pragma once
+
+#include "i2c_ssd1681_defs.h"
+#include "qwiic_grbuffer.h"
+#include "qwiic_i2c.h"
+#include "res/qwiic_resdef.h"
+#include "qwiic_grcommon.h"
+
+/////////////////////////////////////////////////////////////////////////////
+// Buffer Management
+/////////////////////////////////////////////////////////////////////////////
+//
+// SSD1681 supports up to 200 rows and 200 columns
+// Each memory byte contains the pixels for 8 columns
+// (For the SSD1306: each byte contains the pixels for 8 rows / COM lines)
+// The MSB is the left-most pixel
+// By default: white pixels are '1', black are '0', but UpdateCtrl1 can invert this
+// Because this library is hard-wired to expect 'off' pixels to be '0' and 'on' pixels to be '1',
+// it is MUCH easier if we use the inversion...
+// On SSD1681, the 25 'pages' run vertically, not horizontally
+// By default: addresses increase in the X direction: byte 0 is row 0 cols 0-7, byte 1 is row 0 cols 8-15, etc.
+// But Data Entry Mode can select Y-increase instead: byte 0 is row 0 cols 0-7, byte 1 is row 1 cols 0-7
+// Basically, the memory is rotated and flipped compared to the SSD1306, and the pixels are inverted too...
+//
+// The 'pages' are arranged like this:
+//
+//  _  _  _  _  _  _  _
+// | || || || || || || | < Row 0
+// | || || || || || || | < Row 1
+// | || || || || || || | < Row 2
+// | || || || || || || |
+// | || || || || || || |
+// | || || || || || || |
+// |_||_||_||_||_||_||_|
+//      | FPC |
+//
+//        ^- Page 2
+//     ^- Page 1
+//  ^- Page 0
+//
+// The memory/back buffer of the SSD1681 is based on the concept of pages -
+// each page is a stream of bytes, and - with addresses increasing in Y - is defined as follows:
+//
+//      - X pixel position is a bit in a byte, so a page can have 8 X locations
+//      - Y pixel position is an offset in a byte array
+//
+// With inversion, a pixel value of 0 is 'off' (white), 1 id 'on' (black)
+//
+// This implementation uses the Page mode for buffer transfer. This is defined by:
+//     - A start position is set - a page number and row in that page.
+//     - As data is transferred, it is written to the screenbuffer, based on this start
+//       position
+//     - If the end of the page is reached, the next entry location is the start of the next page
+//
+// >> Implementation <<
+//
+// This implementation uses the concept of "dirty rects" at the page level to minimize data
+// transfers to the device. The min and max Y locations set for each page is recorded as
+// graphics are drawn to the graphics buffer. When the transfering the display buffer to
+// the devices screen buffer, the following takes place:
+//
+//      For each page:
+//          - if page is dirty
+//              - Set the screen buffer current location to this page, min dirty value
+//              - Write buffer bytes to the device - starting at min for the page, ending at max
+//              - Mark the buffer as "clean"
+//
+//
+
+/////////////////////////////////////////////////////////////////////////////
+// I2cSsd1681
+// A buffer graphics device to support the SSD1681 graphics hardware
+
+class I2cSsd1681 : public QwEpGrBufferDevice
+{
+  private:
+    void setupDefaults(void);
+
+  public:
+    I2cSsd1681()
+    {
+        setupDefaults(); // default constructor - always called
+    }
+    I2cSsd1681(uint8_t width, uint8_t height) : I2cSsd1681(0, 0, width, height){};
+
+    // call super class
+    I2cSsd1681(uint8_t x0, uint8_t y0, uint8_t width, uint8_t height) : QwEpGrBufferDevice(x0, y0, width, height)
+    {
+        setupDefaults();
+    };
+
+    // Public draw methods
+    void display(bool partial = false, bool dirtyOnly = true); // send graphics buffer to the device screen buffer
+    void erase(void);
+
+    // Device setup
+    virtual bool init(void);
+
+    bool isInitialized(void)
+    {
+        return m_isInitialized;
+    };
+    bool reset(void);
+
+    // method to set the communication bus this object should use
+    void setCommBus(QwEpI2C &theBus, uint8_t id_bus);
+
+    // Set the current color/pixel write operation
+    void setColor(uint8_t color);
+
+    // default address of the device - expect the sub to fill in.
+    uint8_t default_address;
+
+    void setRasterOp(grEpRasterOp_t rop)
+    {
+        m_rop = rop;
+    }
+
+    grEpRasterOp_t rasterOp(void)
+    {
+        return m_rop;
+    }
+
+    void deepSleep(bool mode2); // Only a hardware reset can wake it again
+
+    bool isBusy(void); // Return the state of the BUSY pin
+
+  protected:
+    // Subclasses of this class define the specifics of the device, including size.
+    // Subclass needs to define the graphics buffer array - stack based - and pass in
+    void setBuffer(uint8_t *pBuffer);
+
+    ///////////////////////////////////////////////////////////////////////////
+    // Internal, fast draw routines - this are used in the overall
+    // draw interface (_QwEpIDraw) for this object/device/system.
+    //
+    // >> Pixels <<
+    void drawPixel(uint8_t x, uint8_t y, uint8_t clr);
+
+    // >> Fast Lines <<
+    void drawLineHorz(uint8_t x0, uint8_t y0, uint8_t x1, uint8_t y1, uint8_t clr);
+    void drawLineVert(uint8_t x0, uint8_t y0, uint8_t x1, uint8_t y1, uint8_t clr);
+
+    // fast rect fill
+    void drawRectFilled(uint8_t x0, uint8_t y0, uint8_t width, uint8_t height, uint8_t clr);
+
+    // >> Fast Bitmap <<
+    void drawBitmap(uint8_t x0, uint8_t y0, uint8_t x1, uint8_t y1, uint8_t *pBitmap, uint8_t bmp_width,
+                    uint8_t bmp_height);
+
+    ///////////////////////////////////////////////////////////////////////////
+    // configuration methods for sub-classes. Settings unique to a device
+
+  private:
+    // Internal buffer management methods
+    bool setScreenBufferAddress(uint8_t page, uint8_t rowStart, uint8_t rowEnd);
+    void initBuffers(void); // clear graphics and screen buffer
+    void clearScreenBuffer(void); // clear screen buffer
+    void setupEpaperDevice(void); // always calls initBuffers
+
+    // device communication methods
+    void sendDevCommand(uint8_t command);
+    void sendDevCommand(uint8_t command, uint8_t value);
+    void sendDevCommand(uint8_t command, uint8_t *values, uint16_t n_values);
+    void sendDevReset(void);
+    uint8_t readDevStatus(void);
+
+    /////////////////////////////////////////////////////////////////////////////
+    // instance vars
+
+    // Buffer variables
+    uint8_t *m_pBuffer;                      // Pointer to the graphics buffer
+    uint8_t m_nPages;                        // number of pages for current device
+    // m_pageState
+    // The current "dirty" areas of the graphics [local] buffer.
+    // Areas that haven't been sent to the screen/device but are
+    // "dirty" (have been changed)
+    pageStateEp_t m_pageState[kMaxPageNumberSSD1681]; // page state descriptors
+    // m_pageErase
+    // erase() erases all graphics on the device, placing the display in a blank state.
+    // ** The erase update isn't sent to the device until the next display() call
+    // on the device. **
+    // m_pageErase holds the area of each page which need to be erased on the next
+    // call of display()
+    pageStateEp_t m_pageErase[kMaxPageNumberSSD1681]; // keep track of erase boundaries
+    // m_pendingErase
+    // Flags to indicate which of the screen pages need to be erased.
+    // In the original OLED library, this is a single flag which is set
+    // when erase() is called and cleared by the next display().
+    // In this library, m_pendingErase has been expanded to provide
+    // a flag for each screen bank / page.
+    bool m_pendingErase[kMaxPageNumberSSD1681]; // indicates if this page needs erase
+    // The GoodDisplay e-paper displays have ping-pong mode enabled.
+    // When using partial updates, we need to ensure display() always writes
+    // the current "dirty" area(s) _and_ the previous "dirty" area(s) to the
+    // screen. (Otherwise the two SSD168x RAM banks get out of sync and we
+    // get 'flashing' / 'blinking' areas of pixels.)
+    // Thinking through how we need to handle erase():
+    // display() needs to send:
+    //   the current "dirty" area stored in m_pageState
+    //   expanded to include:
+    //     the current erased area stored in m_pageErase (if flagged)
+    //     the previous combined "dirty" area in m_pagePrevious
+    pageStateEp_t m_pagePrevious[kMaxPageNumberSSD1681]; // previous page state descriptors
+
+    // display variables
+    uint8_t m_color;    // current color (really 0 or 1)
+    grEpRasterOp_t m_rop; // current raster operation code
+
+    // I2C  things
+    QwEpI2C *m_i2cBus;      // pointer to our i2c bus object
+    uint8_t m_i2cAddress; // address of the device
+
+    // Stash values for settings that are unique to each device.
+
+    bool m_isInitialized; // general init flag
+
+    // Handy helper
+    const uint8_t gfx_byte_bits[8] = {0x80, 0x40, 0x20, 0x10, 0x08, 0x04, 0x02, 0x01};
+};
