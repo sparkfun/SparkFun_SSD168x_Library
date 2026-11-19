@@ -2,11 +2,19 @@
 
 ![SparkFun RockBLOCK 9604 Shield](./img/SparkFun_RockBLOCK_9604_Shield.png "SparkFun RockBLOCK 9604 Shield with GoodDisplay GDEM0097T61 0.97 inch e-paper display")
 
-A library to support SSD1680/1 e-paper displays on SPI.
+A library to support SSD1680/1 e-paper displays on SPI. We wrote it to support the GDEM0097T61 e-Paper display on the new SparkFun RockBLOCK 9604 Shield, but you can adapt the examples to run on any platform.
 
 This library is based heavily on the [SparkFun Qwiic OLED Arduino Library](https://github.com/sparkfun/SparkFun_Qwiic_OLED_Arduino_Library) and includes the same fonts and graphics support.
 
 It has been tested on the GoodDisplay GDEY0154D67 1.54&quot; (200 x 200) and GDEM0097T61 0.97&quot; (184 x 88) e-paper displays.
+
+![GitHub License](https://img.shields.io/github/license/sparkfun/SparkFun_SSD168x_Library)
+![Release](https://img.shields.io/github/v/release/sparkfun/SparkFun_SSD168x_Library)
+![Release Date](https://img.shields.io/github/release-date/sparkfun/SparkFun_SSD168x_Library)
+![Documentation - build](https://img.shields.io/github/actions/workflow/status/sparkfun/SparkFun_SSD168x_Library/build-deploy-ghpages.yml?label=doc%20build)
+[![Compile Test](https://github.com/sparkfun/SparkFun_SSD168x_Library/actions/workflows/compile-sketch.yml/badge.svg)](https://github.com/sparkfun/SparkFun_SSD168x_Library/actions/workflows/compile-sketch.yml)
+[![IDF Compile Test](https://github.com/sparkfun/SparkFun_SSD168x_Library/actions/workflows/compile-idf-example.yml/badge.svg)](https://github.com/sparkfun/SparkFun_SSD168x_Library/actions/workflows/compile-idf-example.yml)
+![GitHub issues](https://img.shields.io/github/issues/sparkfun/SparkFun_SSD168x_Library)
 
 Repository Contents
 -------------------
