@@ -109,7 +109,7 @@ Testing the examples on GoodDisplay's Dev Kit
 
 The examples in this library were written for and have been tested on the SparkFun RockBLOCK 9604 Shield, which uses the GoodDisplay 0.97" 184x88 pixel GDEM0097T61 e-Paper display.
 
-The examples have also been tested on GoodDisplay's [ESP32-L Dev Kit](https://www.good-display.com/product/338.html), with their DESPI-C02 24-pin FPC adapter (for the [1.54" GDEY0154D67](https://www.good-display.com/product/388.html)) and the extra CV0097 24-pin to 18-pin FPC adapter (for the [0.97" GDEM0097T61](https://www.good-display.com/product/486.html)). Together, these three parts are called the [ESP32-L(C097) evaluation kit](https://buy-lcd.com/products/097-inch-e-paper-display-development-kit-esp32-epaper-board-esp32-lc097).
+The examples have also been tested on GoodDisplay's [ESP32-L Dev Kit](https://www.good-display.com/product/338.html), with their DESPI-C02 24-pin FPC adapter (for the 1.54" [GDEY0154D67](https://www.good-display.com/product/388.html)) and the extra CV0097 24-pin to 18-pin FPC adapter (for the 0.97" [GDEM0097T61](https://www.good-display.com/product/486.html)). Together, these three parts are called the [ESP32-L(C097) evaluation kit](https://buy-lcd.com/products/097-inch-e-paper-display-development-kit-esp32-epaper-board-esp32-lc097).
 
 Examples 01 and 05 need the 1.54" 200x200 GDEY0154D67 display. The other examples need the 0.97" 184x88 GDEM0097T61 display.
 
