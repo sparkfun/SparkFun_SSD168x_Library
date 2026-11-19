@@ -2,7 +2,7 @@
 
 These are ESP-IDF versions of the Arduino examples in the [examples](https://github.com/sparkfun/SparkFun_SSD168x_Library/blob/main/examples) folder. Each one is a complete ESP-IDF project, with the application in `main/main.cpp`. The library is C++, so the examples are C++ too, with `extern "C" void app_main()`. Each example keeps the Arduino `setup()` / `loop()` structure: `app_main()` calls `setup()` once, then calls `loop()` forever.
 
-The examples are written for the ESP32-S3 on the SparkFun RockBLOCK 9604 Shield, where the GoodDisplay GDEM0097T61 0.97" (184x88 pixels, SSD1680) e-Paper display is connected directly to the ESP32-S3 using SPI. They can also be run on the GoodDisplay ESP32-L Dev Kit (ESP32). Examples 01 and 05 need a 200x200 SSD1681 display (e.g. the GoodDisplay GDEY0154D67).
+The examples are written for the ESP32-S3 on the SparkFun RockBLOCK 9604 Shield, where the GoodDisplay GDEM0097T61 0.97&quot; (184x88 pixels, SSD1680) e-Paper display is connected directly to the ESP32-S3 using SPI. They can also be run on the GoodDisplay ESP32-L Dev Kit (ESP32). Examples 01 and 05 need a 200x200 SSD1681 display (e.g. the GoodDisplay GDEY0154D67).
 
 To build, flash and monitor an example:
 

@@ -6,7 +6,7 @@ A library to support SSD1680/1 e-paper displays on SPI.
 
 This library is based heavily on the [SparkFun Qwiic OLED Arduino Library](https://github.com/sparkfun/SparkFun_Qwiic_OLED_Arduino_Library) and includes the same fonts and graphics support.
 
-It has been tested on the GoodDisplay GDEY0154D67 1.54" (200 x 200) and GDEM0097T61 0.97" (184 x 88) e-paper displays.
+It has been tested on the GoodDisplay GDEY0154D67 1.54&quot; (200 x 200) and GDEM0097T61 0.97&quot; (184 x 88) e-paper displays.
 
 Repository Contents
 -------------------
@@ -54,7 +54,7 @@ On the RockBLOCK 9604 Shield, VP_EN (GPIO4) must be driven high to power the dis
 
 The pins are passed to `begin()`. Arduino:
 
-```C++
+```cpp
 #include <SparkFun_SSD168x_Library.h>
 
 SSD1680SPI184x88Rotated myDisplay;
@@ -70,7 +70,7 @@ void setup()
 
 ESP-IDF:
 
-```C++
+```cpp
 #include "SparkFun_SSD168x_Library.h"
 
 static SSD1680SPI184x88Rotated myDisplay;
@@ -107,11 +107,11 @@ Call `enableDebugging()` to see debug messages on `Serial` (Arduino) or the cons
 Testing the examples on GoodDisplay's Dev Kit
 ---------------------------------------------
 
-The examples in this library were written for and have been tested on the SparkFun RockBLOCK 9604 Shield, which uses the GoodDisplay 0.97" 184x88 pixel GDEM0097T61 e-Paper display.
+The examples in this library were written for and have been tested on the SparkFun RockBLOCK 9604 Shield, which uses the GoodDisplay 0.97&quot; 184x88 pixel GDEM0097T61 e-Paper display.
 
-The examples have also been tested on GoodDisplay's [ESP32-L Dev Kit](https://www.good-display.com/product/338.html), with their DESPI-C02 24-pin FPC adapter (for the 1.54" [GDEY0154D67](https://www.good-display.com/product/388.html)) and the extra CV0097 24-pin to 18-pin FPC adapter (for the 0.97" [GDEM0097T61](https://www.good-display.com/product/486.html)). Together, these three parts are called the [ESP32-L(C097) evaluation kit](https://buy-lcd.com/products/097-inch-e-paper-display-development-kit-esp32-epaper-board-esp32-lc097).
+The examples have also been tested on GoodDisplay's [ESP32-L Dev Kit](https://www.good-display.com/product/338.html), with their DESPI-C02 24-pin FPC adapter (for the 1.54&quot; [GDEY0154D67](https://www.good-display.com/product/388.html)) and the extra CV0097 24-pin to 18-pin FPC adapter (for the 0.97&quot; [GDEM0097T61](https://www.good-display.com/product/486.html)). Together, these three parts are called the [ESP32-L(C097) evaluation kit](https://buy-lcd.com/products/097-inch-e-paper-display-development-kit-esp32-epaper-board-esp32-lc097).
 
-Examples 01 and 05 need the 1.54" 200x200 GDEY0154D67 display. The other examples need the 0.97" 184x88 GDEM0097T61 display.
+Examples 01 and 05 need the 1.54&quot; 200x200 GDEY0154D67 display. The other examples need the 0.97&quot; 184x88 GDEM0097T61 display.
 
 The ESP32-L Dev Kit uses a classic ESP32 (not an ESP32-S3) and the e-Paper display is connected to different pins:
 
@@ -139,7 +139,7 @@ Each Arduino example has a board switch near the top of the file:
 1. Open the example in the Arduino IDE
 2. Find the "Adjust these values according to your configuration" section and uncomment the `ESP32_L_DEV_KIT` define:
 
-    ```C++
+    ```cpp
     // Uncomment the next line to run the example on the GoodDisplay ESP32-L Dev Kit (ESP32)
     #define ESP32_L_DEV_KIT
     ```
@@ -150,7 +150,7 @@ Each Arduino example has a board switch near the top of the file:
 
 The example passes the pins to the library in the normal way:
 
-```C++
+```cpp
     SPI.begin(pin_SCLK, pin_POCI, pin_PICO); // 18, -1, 23
     myDevice.begin(pin_CS, pin_DC, pin_RES, pin_BUSY); // 27, 14, 12, 13
 ```
@@ -175,7 +175,7 @@ idf.py -p PORT flash monitor
 
 The example passes the pins to the library in the normal way:
 
-```C++
+```cpp
     // CS#, D/C#, RES#, BUSY - 27, 14, 12, 13 on the Dev Kit
     myDevice.begin(SPI2_HOST, (gpio_num_t)pin_CS, (gpio_num_t)pin_DC, (gpio_num_t)pin_RES, (gpio_num_t)pin_BUSY);
 ```
@@ -183,7 +183,7 @@ The example passes the pins to the library in the normal way:
 Notes about SSD1680/1 Ping-Pong Mode
 ------------------------------------
 
-The GoodDisplay GDEY0154D67 (1.54", 200 x 200, SSD1681) and GDEM0097T61 (0.97", 184 x 88, SSD1680) e-paper displays both use SSD168x Ping-Pong Mode.
+The GoodDisplay GDEY0154D67 (1.54&quot;, 200 x 200, SSD1681) and GDEM0097T61 (0.97&quot;, 184 x 88, SSD1680) e-paper displays both use SSD168x Ping-Pong Mode.
 If you read the OTP Display Option using command 0x2D, you will find that Bit 6 of Byte F is set, indicating ping-pong mode is enabled.
 We believe this is to allow the displays to better support partial updates. The RAM banks are used to identify which pixels have changed from the previous update.
 It causes some interesting issues...
