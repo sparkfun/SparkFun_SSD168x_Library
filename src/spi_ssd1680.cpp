@@ -697,6 +697,21 @@ void SpiSsd1680::display(bool partial, bool dirtyOnly)
 
     bool displayUpdated = false;
 
+    // Perform a hardware reset - once, before sending any pages. GoodDisplay's code always does this.
+    // It also wakes the SSD168x from deep sleep. If it stays in deep sleep, it will hold BUSY high.
+    // (Earlier versions of this library reset the SSD168x before every page. That added ~30ms per page.
+    // The SSD168x keeps its settings (data entry mode, RAM windows, etc.) through a hardware reset,
+    // so one reset is sufficient.)
+    sendDevReset(); // Hardware reset
+
+    waitWhileBusy(1);
+
+    // Set border - GoodDisplay code always does this
+    if (partial)
+        sendDevCommand( kCmdSsd1680WriteBorder, 0x80 ); // VCOM
+    else
+        sendDevCommand( kCmdSsd1680WriteBorder, 0x05 ); // Follow LUT1 (White)
+
     // Loop over our page descriptors - if a page is dirty, send the graphics
     // buffer dirty region to the device for the current page
 
@@ -731,16 +746,6 @@ void SpiSsd1680::display(bool partial, bool dirtyOnly)
             transferRange.min = 0;
         }
 
-        // Perform hardware reset - GoodDisplay code always does this - not sure if it is strictly necessary?
-        sendDevReset(); // Hardware reset
-
-        waitWhileBusy();
-
-        // Set border - GoodDisplay code always does this
-        if (partial)
-            sendDevCommand( kCmdSsd1680WriteBorder, 0x80 ); // VCOM
-        else
-            sendDevCommand( kCmdSsd1680WriteBorder, 0x05 ); // Follow LUT1 (White)
 
         // set the start address to write the updated data to the devices screen
         // buffer
@@ -788,14 +793,7 @@ void SpiSsd1680::display(bool partial, bool dirtyOnly)
         sendDevCommand( kCmdSsd1680DisplayUpdateCtrl2, partial ? 0xFF : 0xF7 ); // DISPLAY with DISPLAY Mode 2 / 1
         sendDevCommand( kCmdSsd1680MasterActivate ); // Activate
     }
-    else
-    {
-        // If there was nothing new to display - no dirty pixels - then reset the SSD168x
-        // just to wake it up. If it stays in deep sleep, it will hold BUSY high.
-        sendDevReset(); // Hardware reset
-
-        waitWhileBusy(1);
-    }
+    // If there was nothing new to display - no dirty pixels - the SSD168x was still reset (woken) above
 }
 
 ////////////////////////////////////////////////////////////////////////////////////
