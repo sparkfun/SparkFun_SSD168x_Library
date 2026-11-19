@@ -1,0 +1,5 @@
+# SparkFun RockBLOCK 9604 Shield - ESP32-S3-WROOM-1U-N16R8 (idf.py set-target esp32s3)
+# The RockBLOCK 9604 Shield board (pins) is selected automatically. See "Example Configuration" in menuconfig
+CONFIG_ESPTOOLPY_FLASHSIZE_16MB=y
+# Console on the native USB port (USB-C connector)
+CONFIG_ESP_CONSOLE_USB_SERIAL_JTAG=y

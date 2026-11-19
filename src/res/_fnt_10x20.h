@@ -13,7 +13,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 Modified by:
 P.C. @ SparkFun Electronics
 June 21, 2026
-https://github.com/sparkfun/SparkFun_SSD168x_I2C_Interface_Library
+https://github.com/sparkfun/SparkFun_SSD168x_Library
 ******************************************************************************/
 
 #pragma once 

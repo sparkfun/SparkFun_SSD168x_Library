@@ -1,30 +1,20 @@
-
-// qwiic_grbuffer.h
-//
-// Written by P.C. @ SparkFun Electronics, April 2026
-//
-// This is a library to control SSD1680/1 e-Paper displays via I2C, using a I2C to SPI Bridge.
-//
-// SparkFun code, firmware, and software is released under the MIT License(http://opensource.org/licenses/MIT).
-//
-// SPDX-License-Identifier: MIT
-//
-//    The MIT License (MIT)
-//
-//    Copyright (c) 2026 SparkFun Electronics
-//    Permission is hereby granted, free of charge, to any person obtaining a copy of this software and
-//    associated documentation files (the "Software"), to deal in the Software without restriction,
-//    including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
-//    and/or sell copies of the Software, and to permit persons to whom the Software is furnished to
-//    do so, subject to the following conditions:
-//    The above copyright notice and this permission notice shall be included in all copies or substantial
-//    portions of the Software.
-//    THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT
-//    NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
-//    IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
-//    WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
-//    SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
-//
+/**
+ * @date 2026
+ * @copyright Copyright (c) 2026, SparkFun Electronics Inc. This project is released under the MIT License.
+ *
+ * SPDX-License-Identifier: MIT
+ *
+ * Please see LICENSE.md for more details
+ *
+ * A library to control SSD1680/1 e-Paper displays via SPI
+ *
+ * Original I2C version by Paul Clark @ SparkFun Electronics, April 2026
+ * SPI rework by Claude, directed by Paul Clark @ SparkFun Electronics, November 2026
+ *
+ * https://github.com/sparkfun/SparkFun_SSD168x_Library
+ *
+ * @file qwiic_grbuffer.h
+ */
 
 // A Graphics System base class for qwiic display devices - simple bmp based devices.
 
@@ -45,8 +35,8 @@ struct QwEpRect
     uint16_t height;
 };
 
-extern const uint8_t COLOR_ON;
-extern const uint8_t COLOR_OFF;
+extern const uint8_t COLOR_ON;  // 1 : 'on' : black on e-paper (inverted). Defined in qwiic_grbuffer.cpp
+extern const uint8_t COLOR_OFF; // 0 : 'off' : white on e-paper (inverted). Defined in qwiic_grbuffer.cpp
 
 //////////////////////////////////////////////////////////////////////////////////
 // Utils
@@ -63,7 +53,7 @@ const uint8_t text_byte_bits[8] = {0x01, 0x02, 0x04, 0x08, 0x10, 0x20, 0x40, 0x8
 // standard mod operator - maybe
 #define mod_byte(_value_) (_value_ & 0x07)
 
-// Some rouintes need a int swap function. Many ways to do this- all the cool kids
+// Some routines need an int swap function. Many ways to do this- all the cool kids
 // use bitwise ops  - namely the xor.
 //
 #define swap_int(_a_, _b_) (((_a_) ^= (_b_)), ((_b_) ^= (_a_)), ((_a_) ^= (_b_)))
@@ -75,9 +65,9 @@ const uint8_t text_byte_bits[8] = {0x01, 0x02, 0x04, 0x08, 0x10, 0x20, 0x40, 0x8
 ///////////////////////////////////////////////////////////////////////////////////////////
 // _QwEpIDraw
 //
-// IDraw interface for the graphics system. Defines methods used to draw 2D primatives.
+// IDraw interface for the graphics system. Defines methods used to draw 2D primitives.
 //
-// Seperated out to enable easy vtable access and method dispatch short circuiting
+// Separated out to enable easy vtable access and method dispatch short circuiting
 
 class _QwEpIDraw
 {
@@ -125,7 +115,7 @@ class _QwEpIDraw
     }
 };
 
-// Drawing fuction typedefs
+// Drawing function typedefs
 typedef void (*QwDrawPntFn)(void *, uint8_t, uint8_t, uint8_t);
 typedef void (*QwDrawTwoPntFn)(void *, uint8_t, uint8_t, uint8_t, uint8_t, uint8_t);
 typedef void (*QwDrawCircleFn)(void *, uint8_t, uint8_t, uint8_t, uint8_t);

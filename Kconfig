@@ -1,0 +1,11 @@
+menu "SparkFun SSD168x Library"
+
+    config SFE_SSD168X_SPI_CLOCK_HZ
+        int "Default SPI clock speed (Hz)"
+        range 100000 20000000
+        default 4000000
+        help
+            The default SPI (SCLK) clock speed used for the e-Paper display. The SSD1680/1 supports up to 20MHz for writes.
+            The clock speed can also be passed to begin().
+
+endmenu

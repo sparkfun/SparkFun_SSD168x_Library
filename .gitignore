@@ -1,4 +1,30 @@
+# Agent instructions
 AGENTS
 
+# Visual Studio Code files
 .vscode/
 .build/
+
+# Windows image file caches
+Thumbs.db
+Desktop.ini
+
+# macOS
+.DS_Store
+
+# Local build outputs
+*.bin
+*.elf
+
+# Doxygen output
+docs/html/
+
+# ESP-IDF example build files
+idf_examples/**/build/
+idf_examples/**/sdkconfig
+idf_examples/**/sdkconfig.old
+idf_examples/**/managed_components/
+idf_examples/**/dependencies.lock
+
+# ESP-IDF dist files
+dist/*

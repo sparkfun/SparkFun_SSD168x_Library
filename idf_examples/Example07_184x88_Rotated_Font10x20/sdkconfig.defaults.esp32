@@ -1,0 +1,4 @@
+# GoodDisplay ESP32-L Dev Kit - ESP32 (idf.py set-target esp32)
+# The ESP32-L Dev Kit board (pins) is selected automatically. See "Example Configuration" in menuconfig
+CONFIG_ESP32_L_DEV_KIT=y
+# Console on UART0 (the Dev Kit's USB-UART bridge) - the ESP-IDF default

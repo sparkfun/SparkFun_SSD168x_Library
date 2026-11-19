@@ -1,57 +1,52 @@
-// qwiic_ssd1680_custom.h
-//
-// Written by P.C. @ SparkFun Electronics, April 2026
-//
-// This is a library to control SSD1680/1 e-Paper displays via I2C, using a I2C to SPI Bridge.
-//
-// SparkFun code, firmware, and software is released under the MIT License(http://opensource.org/licenses/MIT).
-//
-// SPDX-License-Identifier: MIT
-//
-//    The MIT License (MIT)
-//
-//    Copyright (c) 2026 SparkFun Electronics
-//    Permission is hereby granted, free of charge, to any person obtaining a copy of this software and
-//    associated documentation files (the "Software"), to deal in the Software without restriction,
-//    including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
-//    and/or sell copies of the Software, and to permit persons to whom the Software is furnished to
-//    do so, subject to the following conditions:
-//    The above copyright notice and this permission notice shall be included in all copies or substantial
-//    portions of the Software.
-//    THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT
-//    NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
-//    IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
-//    WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
-//    SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
-
-// Implementation for a generic 200x200 SSD1681 device
+/**
+ * @date 2026
+ * @copyright Copyright (c) 2026, SparkFun Electronics Inc. This project is released under the MIT License.
+ *
+ * SPDX-License-Identifier: MIT
+ *
+ * Please see LICENSE.md for more details
+ *
+ * A library to control SSD1680/1 e-Paper displays via SPI
+ *
+ * Original I2C version by Paul Clark @ SparkFun Electronics, April 2026
+ * SPI rework by Claude, directed by Paul Clark @ SparkFun Electronics, November 2026
+ *
+ * https://github.com/sparkfun/SparkFun_SSD168x_Library
+ *
+ * @file qwiic_ssd1680_custom.h
+ *
+ * Implementation for a custom-sized SSD1680 display.
+ */
 
 #pragma once
 
-#include "i2c_ssd1680.h"
+#include "spi_ssd1680.h"
 
 //////////////////////////////////////////////////////////////////
-// Set the defaults for a generic 184x88 SSD1680 display
+// Set the defaults for a custom-sized SSD1680 display
+// The width, height and offsets can be changed with the set methods - before calling init()
 
-#define kI2cSsd1681184x88DefaultWidth 88
-#define kI2cSsd1681184x88DefaultHeight 184
+#define kSpiSsd1680CustomDefaultWidth 88
+#define kSpiSsd1680CustomDefaultHeight 184
 
-#define kI2cSsd1681184x88DefaultXOffset 0
-#define kI2cSsd1681184x88DefaultYOffset 0
+#define kSpiSsd1680CustomDefaultXOffset 0
+#define kSpiSsd1680CustomDefaultYOffset 0
 
-#define kI2cSsd1681184x88DefaultAddress 0x48
-
-class I2cSsd1680_Custom : public I2cSsd1680 {
+class SpiSsd1680_Custom : public SpiSsd1680 {
 
 public:
-    // Constructor - setup the viewport and default address for this device.
-    I2cSsd1680_Custom()
-        : I2cSsd1680(kI2cSsd1681184x88DefaultXOffset, kI2cSsd1681184x88DefaultYOffset, kI2cSsd1681184x88DefaultWidth, kI2cSsd1681184x88DefaultHeight)
+    /**
+     * @brief Construct the device - setup the default viewport for this device.
+     */
+    SpiSsd1680_Custom()
+        : SpiSsd1680(kSpiSsd1680CustomDefaultXOffset, kSpiSsd1680CustomDefaultYOffset, kSpiSsd1680CustomDefaultWidth, kSpiSsd1680CustomDefaultHeight)
     {
-        default_address = kI2cSsd1681184x88DefaultAddress;
     };
 
-    ~I2cSsd1680_Custom()
+    /**
+     * @brief Destroy the device - free the graphics buffer.
+     */
+    ~SpiSsd1680_Custom()
     {
         if (m_graphicsBuffer != nullptr)
         {
@@ -60,30 +55,38 @@ public:
         }
     };
 
-    // set up the specific device settings
+    /**
+     * @brief Set up the specific device settings: set the viewport, allocate the graphics buffer, then initialize the device.
+     *
+     * @return true on success, false on failure.
+     */
     bool init(void)
     {
-        this->I2cSsd1680::setViewport(m_xOffset, m_yOffset, m_displayWidth, m_displayHeight);
+        this->SpiSsd1680::setViewport(m_xOffset, m_yOffset, m_displayWidth, m_displayHeight);
 
         if (m_graphicsBuffer != nullptr)
             delete[] m_graphicsBuffer;
         m_graphicsBuffer = new uint8_t[(uint16_t)m_displayWidth * (uint16_t)m_displayHeight / 8];
-        this->I2cSsd1680::setBuffer(m_graphicsBuffer); // The buffer to use
+        this->SpiSsd1680::setBuffer(m_graphicsBuffer); // The buffer to use
 
         // Call the super class to do all the work
-        return this->I2cSsd1680::init();
+        return this->SpiSsd1680::init();
     };
 
+    /** @brief Set the X offset. Call before init(). @param xOffset The X offset in pixels. */
     void setXOffset(uint8_t xOffset){ m_xOffset = xOffset; }
+    /** @brief Set the Y offset. Call before init(). @param yOffset The Y offset in pixels. */
     void setYOffset(uint8_t yOffset){ m_yOffset = yOffset; }
+    /** @brief Set the display width. Call before init(). @param displayWidth The width in pixels. Must be a multiple of 8. */
     void setDisplayWidth(uint8_t displayWidth){ m_displayWidth = displayWidth; }
+    /** @brief Set the display height. Call before init(). @param displayHeight The height in pixels. */
     void setDisplayHeight(uint8_t displayHeight){ m_displayHeight = displayHeight; }
 
 private:
-    uint8_t m_xOffset = kI2cSsd1681184x88DefaultXOffset;
-    uint8_t m_yOffset = kI2cSsd1681184x88DefaultYOffset;
-    uint8_t m_displayWidth = kI2cSsd1681184x88DefaultWidth;
-    uint8_t m_displayHeight = kI2cSsd1681184x88DefaultHeight;
+    uint8_t m_xOffset = kSpiSsd1680CustomDefaultXOffset;
+    uint8_t m_yOffset = kSpiSsd1680CustomDefaultYOffset;
+    uint8_t m_displayWidth = kSpiSsd1680CustomDefaultWidth;
+    uint8_t m_displayHeight = kSpiSsd1680CustomDefaultHeight;
 
     // Graphics buffer for this device.
     uint8_t *m_graphicsBuffer = nullptr;

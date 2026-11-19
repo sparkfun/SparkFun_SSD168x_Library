@@ -1,33 +1,26 @@
-
-// qw_pgm_arduino.h
-// 
-// Written by P.C. @ SparkFun Electronics, April 2026
-//
-// This is a library to control SSD1680/1 e-Paper displays via I2C, using a I2C to SPI Bridge.
-//
-// SparkFun code, firmware, and software is released under the MIT License(http://opensource.org/licenses/MIT).
-//
-// SPDX-License-Identifier: MIT
-//
-//    The MIT License (MIT)
-//
-//    Copyright (c) 2026 SparkFun Electronics
-//    Permission is hereby granted, free of charge, to any person obtaining a copy of this software and
-//    associated documentation files (the "Software"), to deal in the Software without restriction,
-//    including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
-//    and/or sell copies of the Software, and to permit persons to whom the Software is furnished to
-//    do so, subject to the following conditions:
-//    The above copyright notice and this permission notice shall be included in all copies or substantial
-//    portions of the Software.
-//    THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT
-//    NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
-//    IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
-//    WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
-//    SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
-
-// File to declare pgmspace in a platform abstract (sort of ) way
+/**
+ * @date 2026
+ * @copyright Copyright (c) 2026, SparkFun Electronics Inc. This project is released under the MIT License.
+ *
+ * SPDX-License-Identifier: MIT
+ *
+ * Please see LICENSE.md for more details
+ *
+ * A library to control SSD1680/1 e-Paper displays via SPI
+ *
+ * Original I2C version by Paul Clark @ SparkFun Electronics, April 2026
+ * SPI rework by Claude, directed by Paul Clark @ SparkFun Electronics, November 2026
+ *
+ * https://github.com/sparkfun/SparkFun_SSD168x_Library
+ *
+ * @file qw_pgm_arduino.h
+ *
+ * Declare pgmspace (PROGMEM, pgm_read_byte) in a platform abstract (sort of) way.
+ */
 
 #pragma once
+
+#if defined(ARDUINO)
 
 #if defined(TARGET_Apollo3)
 // do nothing
@@ -36,5 +29,20 @@
 
 #else
 	#include <pgmspace.h>
+#endif
+
+#elif defined(ESP_PLATFORM)
+
+// Native ESP-IDF: const data is placed in flash automatically and can be read directly
+#include <stdint.h>
+
+#ifndef PROGMEM
+#define PROGMEM
+#endif
+
+#ifndef pgm_read_byte
+#define pgm_read_byte(addr) (*(const uint8_t *)(addr))
+#endif
+
 #endif
 

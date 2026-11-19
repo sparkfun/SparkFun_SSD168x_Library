@@ -1,29 +1,20 @@
-
-// qwiic_grbuffer.cpp
-//
-// Written by P.C. @ SparkFun Electronics, April 2026
-//
-// This is a library to control SSD1680/1 e-Paper displays via I2C, using a I2C to SPI Bridge.
-//
-// SparkFun code, firmware, and software is released under the MIT License(http://opensource.org/licenses/MIT).
-//
-// SPDX-License-Identifier: MIT
-//
-//    The MIT License (MIT)
-//
-//    Copyright (c) 2026 SparkFun Electronics
-//    Permission is hereby granted, free of charge, to any person obtaining a copy of this software and
-//    associated documentation files (the "Software"), to deal in the Software without restriction,
-//    including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
-//    and/or sell copies of the Software, and to permit persons to whom the Software is furnished to
-//    do so, subject to the following conditions:
-//    The above copyright notice and this permission notice shall be included in all copies or substantial
-//    portions of the Software.
-//    THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT
-//    NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
-//    IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
-//    WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
-//    SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+/**
+ * @date 2026
+ * @copyright Copyright (c) 2026, SparkFun Electronics Inc. This project is released under the MIT License.
+ *
+ * SPDX-License-Identifier: MIT
+ *
+ * Please see LICENSE.md for more details
+ *
+ * A library to control SSD1680/1 e-Paper displays via SPI
+ *
+ * Original I2C version by Paul Clark @ SparkFun Electronics, April 2026
+ * SPI rework by Claude, directed by Paul Clark @ SparkFun Electronics, November 2026
+ *
+ * https://github.com/sparkfun/SparkFun_SSD168x_Library
+ *
+ * @file qwiic_grbuffer.cpp
+ */
 
 ////////////////////////////////////////////////////////////////////////////////////
 // Overview:
@@ -39,7 +30,7 @@
 // This class also performs runtime object vtable inspection to determine the methods
 // to call for drawing, and set fallbacks as needed. The vtable is mapped to a draw
 // interface structure, which is used to call the desired graphics operations. Besides
-// providing flexiblity, this implementation might provide a slight performance gain
+// providing flexibility, this implementation might provide a slight performance gain
 // for virtual method dispatch.
 //
 
@@ -50,6 +41,15 @@
 
 // default font
 #include "res/qw_ep_fnt_5x7.h"
+
+////////////////////////////////////////////////////////////////////////////////////
+// Colors
+//
+// Defined here (declared extern in qwiic_grbuffer.h) so there is exactly one definition,
+// however many files include the library header.
+
+const uint8_t COLOR_ON = 1;  // 1 indicates the pixel is 'on': black on e-paper (inverted)
+const uint8_t COLOR_OFF = 0; // 0 indicates the pixel is 'off': white on e-paper (inverted)
 
 ////////////////////////////////////////////////////////////////////////////////////
 // vTable/IDraw Interface Routines
@@ -68,7 +68,7 @@ _QwEpIDraw_vtable *GetIDrawVTable(_QwEpIDraw *obj)
 // Screen Buffer
 //
 // A key feature of this library is that it only sends "dirty" pixels to the
-// device, minimizing data transfer over the I2C bus. To accomplish this, the
+// device, minimizing data transfer over the SPI bus. To accomplish this, the
 // dirty range of each graphics buffer page (see device memory layout in the
 // datasheet) is maintained during drawing operation. Whe data is sent to the
 // device, only the pixels in these regions are sent to the device, not the
@@ -139,7 +139,7 @@ void QwEpGrBufferDevice::pageCheckBoundsRange(pageStateEp_t &_page_, uint8_t _c0
 // the draw functions in this interface to skip call time vtable method lookup and call the
 // target method directly.
 //
-// Ideally this pattern/implementation increase performace a slight bit. Also it
+// Ideally this pattern/implementation increases performance a slight bit. Also it
 // allows runtime method implementation determination in this class, which can then
 // setup fallbacks if need.
 //
@@ -147,7 +147,7 @@ void QwEpGrBufferDevice::pageCheckBoundsRange(pageStateEp_t &_page_, uint8_t _c0
 bool QwEpGrBufferDevice::initDrawFunctions(void)
 {
     // Get our vtable, and that of a null _QwEpIDraw object/interface.
-    // Use these to determine if a method was overriden/implemented and
+    // Use these to determine if a method was overridden/implemented and
     // set defaults ... etc
 
     _QwEpIDraw null_obj_; // dummy object
@@ -190,7 +190,7 @@ bool QwEpGrBufferDevice::initDrawFunctions(void)
 ////////////////////////////////////////////////////////////////////////////////////
 // init()
 //
-// Intialize the class. User called as part of the startup process of the library.
+// Initialize the class. User called as part of the startup process of the library.
 //
 
 bool QwEpGrBufferDevice::init(void)
@@ -228,7 +228,7 @@ QwEpFont *QwEpGrBufferDevice::font(void)
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////
-// seFont()
+// setFont()
 //
 // Object ref version
 
@@ -308,7 +308,7 @@ void QwEpGrBufferDevice::pixel(uint8_t x, uint8_t y, uint8_t clr)
 
 void QwEpGrBufferDevice::line(uint8_t x0, uint8_t y0, uint8_t x1, uint8_t y1, uint8_t clr)
 {
-    // if we have a vertical or horizonal line, call the optimized drawing functions
+    // if we have a vertical or horizontal line, call the optimized drawing functions
 
     if (x0 == x1)
         (*m_idraw.drawLineVert)(this, x0, y0, x1, y1, clr);
@@ -328,7 +328,7 @@ void QwEpGrBufferDevice::drawLine(uint8_t x0, uint8_t y0, uint8_t x1, uint8_t y1
     // The rasterization method uses an increment of 1 to walk the desired line
     // to determine which pixels are being set in the buffer device.
     //
-    // To ensure a detailed rasterization, the dimention with the largest value is used.
+    // To ensure a detailed rasterization, the dimension with the largest value is used.
 
     // deltas for each dimension
     uint8_t dx = abs(x1 - x0);
@@ -424,7 +424,7 @@ void QwEpGrBufferDevice::drawRect(uint8_t x0, uint8_t y0, uint8_t width, uint8_t
     if (y1 - y0 < 3)
         return;
 
-    // Vertical lines - note - do not draw over our horz lines b/c of potential xor turds
+    // Vertical lines - note - do not draw over our horz lines b/c of potential xor artifacts
     (*m_idraw.drawLineVert)(this, x0, y0 + 1, x0, y1, clr);
     (*m_idraw.drawLineVert)(this, x1, y0 + 1, x1, y1, clr);
 }
@@ -619,7 +619,7 @@ void QwEpGrBufferDevice::text(uint8_t x0, uint8_t y0, const char *text, uint8_t 
     (m_idraw.drawText)(this, x0, y0, text, clr);
 }
 ////////////////////////////////////////////////////////////////////////////////////////
-// draw_test()
+// drawText()
 //
 // Draw text - one pixel at a time. Based on the algorithm in the Micro OLED
 // Arduino library

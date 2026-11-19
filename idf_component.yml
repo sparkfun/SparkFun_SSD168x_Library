@@ -1,0 +1,40 @@
+version: "1.0.0"
+description: "SparkFun SSD168x Library: SPI driver and graphics for SSD1680 / SSD1681 e-Paper displays"
+url: "https://github.com/sparkfun/SparkFun_SSD168x_Library"
+repository: "https://github.com/sparkfun/SparkFun_SSD168x_Library.git"
+issues: "https://github.com/sparkfun/SparkFun_SSD168x_Library/issues"
+license: "MIT"
+maintainers:
+  - "SparkFun Electronics <techsupport@sparkfun.com>"
+tags:
+  - e-paper
+  - epaper
+  - eink
+  - display
+  - ssd1680
+  - ssd1681
+  - spi
+  - sparkfun
+dependencies:
+  # The split esp_driver_* components need ESP-IDF v5.3 or later
+  idf: ">=5.3"
+files:
+  exclude:
+    - "examples/**/*"  # Arduino examples. The ESP-IDF examples are in idf_examples
+    - "docs/**/*"
+    - "img/**/*"
+    - "AGENTS/**/*"
+    - ".github/**/*"
+    - "*.bin"          # Local build outputs
+    - "*.elf"
+examples:
+  - path: idf_examples/Example01_BasicUsage_200x200
+  - path: idf_examples/Example02_BasicUsage_184x88
+  - path: idf_examples/Example03_BasicUsage_184x88_Rotated
+  - path: idf_examples/Example04_184x88_Rotated_Clock
+  - path: idf_examples/Example05_200x200_Clock
+  - path: idf_examples/Example06_184x88_Rotated_RTK
+  - path: idf_examples/Example07_184x88_Rotated_Font10x20
+  - path: idf_examples/Example08_184x88_Rotated_Partial
+  - path: idf_examples/Example09_184x88_Clock
+  - path: idf_examples/Example10_184x88_Rotated_Partial_Text_Erase

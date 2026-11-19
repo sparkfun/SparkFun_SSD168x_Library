@@ -1,25 +1,25 @@
 // Example06 : RTK display emulator (184x88) using partial updates
 //
 // Written by P.C. @ SparkFun Electronics, April 2026
+// SPI version: November 2026
 //
-// This is a library to control SSD1680/1 e-Paper displays via I2C, using a I2C to SPI Bridge.
+// This is a library to control SSD1680/1 e-Paper displays via SPI.
 //
-// The I2C SPI Bridge is configured as a I2C peripheral with five registers:
-// Single Control (Register 0x00), Control (Register 0x01), Data (Register 0x02), Final Data (Register 0x03) and Reset (Register 0x04).
-// A single control byte written to Register 0x00 is bridged to SPI with the D/C# pin held low. CS returns high after the write.
-// All data written to Register 0x01 is bridged to SPI with the D/C# pin held low. CS remains low after the write.
-// All data written to Register 0x02 is bridged to SPI with the D/C# pin held high. CS remains low after the write.
-// All data written to Register 0x03 is bridged to SPI with the D/C# pin held high. CS returns high after the write.
-// A write to Register 0x04 causes RST to be pulled low briefly.
-// I2C reads return bytes containing the e-paper BUSY flag in the LSB.
+// This example is written for the ESP32-S3 on the SparkFun RockBLOCK 9604 Shield, where the
+// GoodDisplay GDEM0097T61 0.97" (184x88 pixels, SSD1680) e-Paper display is connected
+// directly to the ESP32-S3 using SPI. The SPI bus is shared with the microSD card.
+// It can also run on the GoodDisplay ESP32-L Dev Kit: uncomment "#define ESP32_L_DEV_KIT" below.
+// Change the pin definitions below to suit your hardware.
+//
+// The e-Paper display needs: SCLK, PICO (MOSI / SDIN), CS#, D/C#, RES# and BUSY.
 //
 // SparkFun code, firmware, and software is released under the MIT License(http://opensource.org/licenses/MIT).
 //
 // SPDX-License-Identifier: MIT
 
-#include <SparkFun_SSD168x_I2C_Interface_Library.h> // http://librarymanager/All#SparkFun_SSD168x_I2C_Interface_Library
+#include <SparkFun_SSD168x_Library.h> // http://librarymanager/All#SparkFun_SSD168x_Library
 
-SSD1680I2C184x88Rotated myDevice;
+SSD1680SPI184x88Rotated myDevice;
 
 // Fonts
 #include <res/qw_ep_fnt_5x7.h>
@@ -42,44 +42,57 @@ const int startY = 12;
 // Adjust these values according to your configuration
 //------------------------------------------------------------------------------
 
-// Pre-defined boards - comment / uncomment as needed:
-//#define FACET_FP
-//#define POSTCARD
-#define ESP32_THING_PLUS_C
+// Pre-defined boards:
+// By default, the pins are set for the SparkFun RockBLOCK 9604 Shield (ESP32-S3)
+// Uncomment the next line to run the example on the GoodDisplay ESP32-L Dev Kit (ESP32)
+//#define ESP32_L_DEV_KIT
 
-#ifdef  FACET_FP
+#ifdef  ESP32_L_DEV_KIT
 
-// https://www.sparkfun.com/sparkpnt-fp-no-gnss-receiver.html
-int pin_SDA = 15;
-int pin_SCL = 4;
-const char * platform = "SparkPNT FP";
+// GoodDisplay ESP32-L Dev Kit (ESP32), with the DESPI-C02 adapter (+ the CV0097 adapter for the 0.97" display)
+// Arduino IDE: select the "ESP32 Dev Module" board
+// These are the pins used by GoodDisplay's own example code (A14 = GPIO13, A15 = GPIO12, A16 = GPIO14, A17 = GPIO27)
+const int pin_PICO = 23;     // SPI PICO (MOSI) - connected to the e-Paper SDIN pin
+const int pin_SCLK = 18;     // SPI SCLK
+const int pin_POCI = -1;     // SPI POCI (MISO) - not used by the e-Paper display
+const int pin_CS = 27;       // e-Paper CS# (chip select)
+const int pin_DC = 14;       // e-Paper D/C# (data / command)
+const int pin_RES = 12;      // e-Paper RES# (reset). Use -1 if not connected
+const int pin_BUSY = 13;     // e-Paper BUSY
+const int pin_VP_EN = -1;    // Not used on the Dev Kit
+const int pin_SD_CS = -1;    // Not used on the Dev Kit
+const int pin_EXT_CS_1 = -1; // Not used on the Dev Kit
+const int pin_EXT_CS_2 = -1; // Not used on the Dev Kit
+const char * platform = "GoodDisplay ESP32-L Dev Kit";
 
-#else   // FACET_FP
-#ifdef  POSTCARD
+#else   // ESP32_L_DEV_KIT
 
-// https://www.sparkfun.com/sparkfun-rtk-postcard.html
-int pin_SDA = 7;
-int pin_SCL = 20;
-const char * platform = "SparkFun RTK Postcard";
+// SparkFun RockBLOCK 9604 Shield (ESP32-S3)
+// The e-Paper display is connected directly to the ESP32-S3 using SPI
+// Arduino IDE: select the "ESP32S3 Dev Module" board
+const int pin_PICO = 11;     // SPI PICO (MOSI) - connected to the e-Paper SDIN pin
+const int pin_SCLK = 12;     // SPI SCLK
+const int pin_POCI = 13;     // SPI POCI (MISO) - not used by the e-Paper display. Used by the microSD card
+const int pin_CS = 15;       // e-Paper CS# (chip select)
+const int pin_DC = 7;        // e-Paper D/C# (data / command)
+const int pin_RES = 6;       // e-Paper RES# (reset). Use -1 if not connected
+const int pin_BUSY = 5;      // e-Paper BUSY
+const int pin_VP_EN = 4;     // Peripheral power enable. Set high to power the e-Paper display
+const int pin_SD_CS = 10;    // microSD CS# - shares the SPI bus. Keep high (deselected)
+const int pin_EXT_CS_1 = 1;  // External SPI connector CS#1 - shares the SPI bus. Keep high (deselected)
+const int pin_EXT_CS_2 = 2;  // External SPI connector CS#2 - shares the SPI bus. Keep high (deselected)
+const char * platform = "SparkFun RockBLOCK 9604 Shield";
 
-#else   // POSTCARD
-#ifdef ESP32_THING_PLUS_C
+#endif  // ESP32_L_DEV_KIT
 
-// https://www.sparkfun.com/sparkfun-thing-plus-esp32-wroom-usb-c.html
-int pin_SDA = 21;
-int pin_SCL = 22;
-const char * platform = "SparkFun ESP32 Thing Plus C";
-
-#else  // ESP32_THING_PLUS_C
-
-// https://www.sparkfun.com/sparkfun-iot-redboard-esp32-development-board.html
-int pin_SDA = 21;
-int pin_SCL = 22;
-const char * platform = "SparkFun IoT Redboard";
-
-#endif  // ESP32_THING_PLUS_C
-#endif  // POSTCARD
-#endif  // FACET_FP
+// Configure a pin as an output and drive it high. Ignored if the pin is -1 (not used)
+void pinOutputHigh(int pin)
+{
+    if (pin < 0)
+        return;
+    pinMode(pin, OUTPUT);
+    digitalWrite(pin, HIGH);
+}
 
 void setup()
 {
@@ -87,13 +100,30 @@ void setup()
     
     // Start serial
     Serial.begin(115200);
-    Serial.printf("Running SSD168x example on %s\r\n", platform);
+    Serial.print("Running SSD168x example on ");
+    Serial.println(platform);
 
-    Wire.begin(pin_SDA, pin_SCL);
-    Wire.setClock(400000); // Increase I2C bus speed to 400kHz
+    // Deselect the other devices on the shared SPI bus
+    pinOutputHigh(pin_SD_CS);
+    pinOutputHigh(pin_EXT_CS_1);
+    pinOutputHigh(pin_EXT_CS_2);
 
-    // Initalize the device and related graphics system
-    if (myDevice.begin() == false)
+    // Enable the peripheral power for the e-Paper display
+    if (pin_VP_EN >= 0)
+    {
+        pinOutputHigh(pin_VP_EN);
+        delay(100); // Let the power stabilize
+    }
+
+    // Start SPI
+#if defined(ARDUINO_ARCH_ESP32)
+    SPI.begin(pin_SCLK, pin_POCI, pin_PICO);
+#else
+    SPI.begin();
+#endif
+
+    // Initialize the device and related graphics system
+    if (myDevice.begin(pin_CS, pin_DC, pin_RES, pin_BUSY) == false)
     {
         Serial.println("Device begin failed. Freezing...");
         while (true)
@@ -128,7 +158,7 @@ void setup()
 
     // Wait for display to update
     while (myDevice.isBusy())
-        delay(10); // Don't pound the I2C bus too hard    
+        delay(10); // Check BUSY every 10ms
 }
 
 void loop()
@@ -178,7 +208,7 @@ void loop()
 
     // Wait for display to update
     do {
-        delay(10); // Don't pound the I2C bus too hard
+        delay(10); // Check BUSY every 10ms
     } while (myDevice.isBusy());
 
     // Put display into deep sleep

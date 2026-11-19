@@ -1,0 +1,97 @@
+menu "Example Configuration"
+
+    choice EXAMPLE_BOARD
+        prompt "Board"
+        default ESP32_L_DEV_KIT if IDF_TARGET_ESP32
+        default ROCKBLOCK_9604_SHIELD
+        help
+            Selects the default GPIO pins. The board is selected automatically by the target:
+            idf.py set-target esp32s3 selects the RockBLOCK 9604 Shield; idf.py set-target esp32
+            selects the ESP32-L Dev Kit. If you change the board here, delete sdkconfig (or run
+            idf.py set-target again) so that the pin defaults below are updated.
+
+        config ROCKBLOCK_9604_SHIELD
+            bool "SparkFun RockBLOCK 9604 Shield (ESP32-S3)"
+
+        config ESP32_L_DEV_KIT
+            bool "GoodDisplay ESP32-L Dev Kit (ESP32)"
+
+    endchoice
+
+    config EXAMPLE_SPI_SCLK_GPIO
+        int "SPI SCLK GPIO"
+        range 0 63
+        default 18 if ESP32_L_DEV_KIT
+        default 12
+
+    config EXAMPLE_SPI_PICO_GPIO
+        int "SPI PICO (MOSI) GPIO"
+        range 0 63
+        default 23 if ESP32_L_DEV_KIT
+        default 11
+        help
+            Connected to the e-Paper SDIN pin.
+
+    config EXAMPLE_SPI_POCI_GPIO
+        int "SPI POCI (MISO) GPIO"
+        range -1 63
+        default -1 if ESP32_L_DEV_KIT
+        default 13
+        help
+            Not used by the e-Paper display. On the RockBLOCK 9604 Shield it is used by the microSD card. -1 if not connected.
+
+    config EXAMPLE_EPAPER_CS_GPIO
+        int "e-Paper CS# (chip select) GPIO"
+        range 0 63
+        default 27 if ESP32_L_DEV_KIT
+        default 15
+
+    config EXAMPLE_EPAPER_DC_GPIO
+        int "e-Paper D/C# (data / command) GPIO"
+        range 0 63
+        default 14 if ESP32_L_DEV_KIT
+        default 7
+
+    config EXAMPLE_EPAPER_RES_GPIO
+        int "e-Paper RES# (reset) GPIO"
+        range -1 63
+        default 12 if ESP32_L_DEV_KIT
+        default 6
+        help
+            -1 if RES# is not connected. A software reset is then used instead.
+
+    config EXAMPLE_EPAPER_BUSY_GPIO
+        int "e-Paper BUSY GPIO"
+        range 0 63
+        default 13 if ESP32_L_DEV_KIT
+        default 5
+
+    config EXAMPLE_VP_EN_GPIO
+        int "Peripheral power enable (VP_EN) GPIO"
+        range -1 63
+        default -1 if ESP32_L_DEV_KIT
+        default 4
+        help
+            Driven high to power the e-Paper display. -1 if not used.
+
+    config EXAMPLE_SD_CS_GPIO
+        int "microSD CS# GPIO (driven high - deselected)"
+        range -1 63
+        default -1 if ESP32_L_DEV_KIT
+        default 10
+        help
+            The microSD card shares the SPI bus. -1 if not used.
+
+    config EXAMPLE_EXT_CS_1_GPIO
+        int "External SPI CS#1 GPIO (driven high - deselected)"
+        range -1 63
+        default -1 if ESP32_L_DEV_KIT
+        default 1
+
+    config EXAMPLE_EXT_CS_2_GPIO
+        int "External SPI CS#2 GPIO (driven high - deselected)"
+        range -1 63
+        default -1 if ESP32_L_DEV_KIT
+        default 2
+
+endmenu

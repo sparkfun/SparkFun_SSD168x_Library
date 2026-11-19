@@ -1,20 +1,22 @@
 #########################################################
-# Syntax Coloring Map for TODO: Add name                #
+# Syntax Coloring Map for SparkFun SSD168x Library     #
 #########################################################
 # Class
 #########################################################
 
-SSD1680I2C184x88	KEYWORD1
-SSD1681I2C200x200	KEYWORD1
-SSD1680I2CCustom	KEYWORD1
-SSD1681I2CCustom	KEYWORD1
-SSD1680I2C184x88Rotated	KEYWORD1
+SSD1680SPI184x88	KEYWORD1
+SSD1681SPI200x200	KEYWORD1
+SSD1680SPICustom	KEYWORD1
+SSD1681SPICustom	KEYWORD1
+SSD1680SPI184x88Rotated	KEYWORD1
 
 #########################################################
 # Methods and Functions
 #########################################################
 
 begin	KEYWORD2
+enableDebugging	KEYWORD2
+disableDebugging	KEYWORD2
 getWidth	KEYWORD2
 getHeight	KEYWORD2
 reset	KEYWORD2

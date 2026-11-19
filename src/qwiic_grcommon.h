@@ -1,38 +1,30 @@
-// qwiic_grcommon.h
-//
-// Written by P.C. @ SparkFun Electronics, April 2026
-//
-// This is a library to control SSD1680/1 e-Paper displays via I2C, using a I2C to SPI Bridge.
-//
-// SparkFun code, firmware, and software is released under the MIT License(http://opensource.org/licenses/MIT).
-//
-// SPDX-License-Identifier: MIT
-//
-//    The MIT License (MIT)
-//
-//    Copyright (c) 2026 SparkFun Electronics
-//    Permission is hereby granted, free of charge, to any person obtaining a copy of this software and
-//    associated documentation files (the "Software"), to deal in the Software without restriction,
-//    including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
-//    and/or sell copies of the Software, and to permit persons to whom the Software is furnished to
-//    do so, subject to the following conditions:
-//    The above copyright notice and this permission notice shall be included in all copies or substantial
-//    portions of the Software.
-//    THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT
-//    NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
-//    IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
-//    WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
-//    SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+/**
+ * @date 2026
+ * @copyright Copyright (c) 2026, SparkFun Electronics Inc. This project is released under the MIT License.
+ *
+ * SPDX-License-Identifier: MIT
+ *
+ * Please see LICENSE.md for more details
+ *
+ * A library to control SSD1680/1 e-Paper displays via SPI
+ *
+ * Original I2C version by Paul Clark @ SparkFun Electronics, April 2026
+ * SPI rework by Claude, directed by Paul Clark @ SparkFun Electronics, November 2026
+ *
+ * https://github.com/sparkfun/SparkFun_SSD168x_Library
+ *
+ * @file qwiic_grcommon.h
+ */
 
-// Common defines for multiple 
+// Common defines for multiple devices
 // TODO: Probably should rework how this looks eventually...
 
 /////////////////////////////////////////////////////////////////////////////
 // The graphics Raster Operator functions (ROPS)
 /////////////////////////////////////////////////////////////////////////////
-//      - Copy      - copy the pixel value in to the buffer (default)
+//      - Copy      - copy the pixel value into the buffer (default)
 //      - Not Copy  - copy the not of the pixel value to buffer
-//      - Not       - Set the buffer value to not it's current value
+//      - Not       - Set the buffer value to not its current value
 //      - XOR       - XOR of color and current pixel value
 //      - Off       - Set value to always be Off
 //      - On        - set value to always be On

@@ -1,0 +1,5 @@
+# Settings for all targets. Target-specific settings are in sdkconfig.defaults.<target>
+# 1000Hz FreeRTOS tick: lets the library's short delays (1ms) be true sleeps. Recommended
+CONFIG_FREERTOS_HZ=1000
+# Allow plenty of stack for app_main (the 184x88 rotated display clears its RAM using a 2024 byte buffer on the stack)
+CONFIG_ESP_MAIN_TASK_STACK_SIZE=8192
