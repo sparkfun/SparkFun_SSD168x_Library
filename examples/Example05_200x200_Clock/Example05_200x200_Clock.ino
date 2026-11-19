@@ -172,15 +172,14 @@ void loop()
     char theTime[strlen("HHHH:MM:SS") + 1];
 
     // split millis into hours, mins and secs
-    int hh,mm,ss;
-    ss = millis() / 1000;
-    hh = ss / 3600;
-    ss -= hh * 3600;
-    mm = ss / 60;
-    ss -= mm * 60;
+    // (unsigned, and limited to 9999 hours, so theTime cannot overflow)
+    unsigned long secs = millis() / 1000;
+    unsigned int hh = (secs / 3600) % 10000;
+    unsigned int mm = (secs / 60) % 60;
+    unsigned int ss = secs % 60;
 
     // print into theTime
-    sprintf(theTime, "%04d:%02d:%02d", hh, mm, ss);
+    snprintf(theTime, sizeof(theTime), "%04u:%02u:%02u", hh, mm, ss);
 
     // work out how many and which characters have changed
     int numCharsChanged = 0;

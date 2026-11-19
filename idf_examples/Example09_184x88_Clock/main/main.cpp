@@ -186,16 +186,15 @@ static void loop()
     char theTime[strlen("HHMMSS") + 1];
 
     // split millis into hours, mins and secs
-    int hh,mm,ss;
-    ss = millis() / 1000; // Convert millis to seconds
-    ss = ss % 86400; // Limit to 23:59:59
-    hh = ss / 3600;
-    ss -= hh * 3600;
-    mm = ss / 60;
-    ss -= mm * 60;
+    // (unsigned, so theTime cannot overflow)
+    unsigned long secs = millis() / 1000; // Convert millis to seconds
+    secs = secs % 86400; // Limit to 23:59:59
+    unsigned int hh = secs / 3600;
+    unsigned int mm = (secs / 60) % 60;
+    unsigned int ss = secs % 60;
 
     // print into theTime
-    sprintf(theTime, "%02d%02d%02d", hh, mm, ss);
+    snprintf(theTime, sizeof(theTime), "%02u%02u%02u", hh, mm, ss);
 
     // Work out how many and which characters have changed
     int numCharsChanged = 0;
