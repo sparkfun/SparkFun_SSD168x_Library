@@ -15,6 +15,16 @@ idf.py -p PORT flash monitor
 
 Each example's `main/idf_component.yml` pulls in the library with `override_path: "../../../"`, so it builds against the library in this repository. (`override_path` is removed automatically when an example is downloaded from the ESP-IDF Component Registry.) Each example's `sdkconfig.defaults` sets `CONFIG_FREERTOS_HZ=1000` - recommended: it makes the library's short (1ms) delays true sleeps - and increases the main task stack size to 8192 bytes. `sdkconfig.defaults.esp32s3` adds the RockBLOCK 9604 Shield settings: 16MB flash and the native USB (USB Serial/JTAG) console. `sdkconfig.defaults.esp32` selects the ESP32-L Dev Kit.
 
+**Important:** ESP-IDF uses the directory name as the component name. The component is called `sparkfun_ssd168x_library`, so the folder containing this repository must be called `sparkfun_ssd168x_library` (all lower case) when you build these examples. Otherwise the build fails with: `Failed to resolve component 'sparkfun__sparkfun_ssd168x_library' required by component 'main': unknown name`. If you cloned the repo or installed it with the Arduino Library Manager, the folder is called `SparkFun_SSD168x_Library`: clone it again into a folder with the lower-case name, or rename it. On Windows, renaming only the case takes two steps:
+
+```
+cd C:\Users\<you>\Documents\Arduino\libraries
+Rename-Item SparkFun_SSD168x_Library sparkfun_ssd168x_library_tmp
+Rename-Item sparkfun_ssd168x_library_tmp sparkfun_ssd168x_library
+```
+
+The Arduino IDE does not mind the lower-case name. This only affects building the examples from this repository: when you add the component from the Component Registry (`idf.py add-dependency`), the Component Manager names the folder for you.
+
 The user creates the SPI bus (`spi_bus_initialize()`) and passes the SPI host and the CS#, D/C#, RES# and BUSY pins to `begin()`. The library adds the display to the bus as a device, so the bus can be shared with other devices (e.g. the microSD card). Alternatively, add the device yourself (with `spics_io_num = -1`, SPI mode 0) and pass the `spi_device_handle_t` to `begin()`.
 
 The default SPI clock speed is 4MHz. Change it with `idf.py menuconfig` -> "SparkFun SSD168x Library", or pass it to `begin()`.
