@@ -21,7 +21,7 @@
 
 #include "sfe_platform.h"
 
-#if defined(SFE_ARDUINO) // This file contains the Arduino implementation. See sfe_bus_esp_idf.cpp for ESP-IDF
+#if defined(SFE_SSD168X_ARDUINO) // This file contains the Arduino implementation. See sfe_bus_esp_idf.cpp for ESP-IDF
 
 #include "sfe_bus.h"
 
@@ -146,4 +146,4 @@ namespace SparkFun_SSD168x
 
 }
 
-#endif // SFE_ARDUINO
+#endif // SFE_SSD168X_ARDUINO

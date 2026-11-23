@@ -26,6 +26,9 @@
  *                             (Arduino String, or std::string on ESP-IDF)
  *   DEC / HEX                 number bases for debugPrint()
  *
+ * Everything here is inside namespace SparkFun_SSD168x, so this library can be used together with other
+ * SparkFun libraries which have their own sfe_platform.h.
+ *
  * The platform is selected automatically:
  *   ARDUINO defined           -> Arduino (this includes arduino-esp32 used as an ESP-IDF component)
  *   ESP_PLATFORM defined      -> native ESP-IDF
@@ -39,11 +42,13 @@
 // Arduino
 // ---------------------------------------------------------------------------------------------
 
-#define SFE_ARDUINO 1
+#define SFE_SSD168X_ARDUINO 1
 
 #include <Arduino.h>
 #include <SPI.h>
 
+namespace SparkFun_SSD168x
+{
 typedef String sfe_string_t;
 
 static inline unsigned long sfe_millis(void) { return millis(); }
@@ -53,13 +58,15 @@ static inline void sfe_pin_input(int pin) { pinMode(pin, INPUT); }
 static inline void sfe_pin_write(int pin, bool high) { digitalWrite(pin, high ? HIGH : LOW); }
 static inline bool sfe_pin_read(int pin) { return digitalRead(pin) == HIGH; }
 
+} // namespace SparkFun_SSD168x
+
 #elif defined(ESP_PLATFORM)
 
 // ---------------------------------------------------------------------------------------------
 // Native ESP-IDF
 // ---------------------------------------------------------------------------------------------
 
-#define SFE_ESP_IDF 1
+#define SFE_SSD168X_ESP_IDF 1
 
 #include <stdint.h>
 #include <stddef.h>
@@ -80,6 +87,8 @@ static inline bool sfe_pin_read(int pin) { return digitalRead(pin) == HIGH; }
 #define HEX 16
 #endif
 
+namespace SparkFun_SSD168x
+{
 typedef std::string sfe_string_t;
 
 static inline unsigned long sfe_millis(void) { return (unsigned long)(esp_timer_get_time() / 1000ULL); }
@@ -121,6 +130,8 @@ static inline void sfe_pin_input(int pin)
 }
 static inline void sfe_pin_write(int pin, bool high) { gpio_set_level((gpio_num_t)pin, high ? 1 : 0); }
 static inline bool sfe_pin_read(int pin) { return gpio_get_level((gpio_num_t)pin) != 0; }
+
+} // namespace SparkFun_SSD168x
 
 #else
 

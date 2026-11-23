@@ -57,7 +57,7 @@ namespace SparkFun_SSD168x
     virtual bool writeCommand(uint8_t command, const uint8_t *data, uint16_t length) = 0;
   };
 
-#if defined(SFE_ARDUINO)
+#if defined(SFE_SSD168X_ARDUINO)
 
   /**
    * @brief The default SPI clock speed (Hz). The SSD168x supports up to 20MHz for writes.
@@ -266,14 +266,17 @@ namespace SparkFun_SSD168x
     Print *_outputPort;
   };
 
-#endif // SFE_ARDUINO
+#endif // SFE_SSD168X_ARDUINO
 
 };
 
-#if defined(SFE_ARDUINO)
+#if defined(SFE_SSD168X_ARDUINO)
 // The type used by the public API for the debug output port: enableDebugging()
+namespace SparkFun_SSD168x
+{
 typedef Print sfe_print_t;
-#elif defined(SFE_ESP_IDF)
+} // namespace SparkFun_SSD168x
+#elif defined(SFE_SSD168X_ESP_IDF)
 // ESP-IDF bus class (SfeSPI), output ports (SfeOutput) and SfePrint
 #include "sfe_bus_esp_idf.h"
 #endif

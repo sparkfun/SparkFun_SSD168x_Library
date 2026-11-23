@@ -1,4 +1,4 @@
-version: "1.0.1"
+version: "1.0.2"
 description: "SparkFun SSD168x Library: SPI driver and graphics for SSD1680 / SSD1681 e-Paper displays"
 url: "https://github.com/sparkfun/SparkFun_SSD168x_Library"
 repository: "https://github.com/sparkfun/SparkFun_SSD168x_Library.git"

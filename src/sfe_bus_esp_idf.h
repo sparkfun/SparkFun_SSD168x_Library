@@ -13,7 +13,7 @@
  * Native ESP-IDF implementation of the hardware bus class (SfeSPI) and of the debug output
  * ports (SfeOutput, SfePrint).
  *
- * Included by sfe_bus.h when building as an ESP-IDF component (SFE_ESP_IDF). Do not include directly.
+ * Included by sfe_bus.h when building as an ESP-IDF component (SFE_SSD168X_ESP_IDF). Do not include directly.
  * The Arduino equivalents are in sfe_bus.h / sfe_bus.cpp.
  *
  * The user creates and owns the bus (spi_bus_initialize()). This class attaches the e-Paper display
@@ -24,7 +24,7 @@
 
 #include "sfe_platform.h"
 
-#if defined(SFE_ESP_IDF)
+#if defined(SFE_SSD168X_ESP_IDF)
 
 #include "sdkconfig.h"
 #include "driver/spi_master.h"
@@ -215,6 +215,9 @@ namespace SparkFun_SSD168x
 };
 
 // The type used by the public API for the debug output port: enableDebugging()
-typedef SparkFun_SSD168x::SfeOutput sfe_print_t;
+namespace SparkFun_SSD168x
+{
+typedef SfeOutput sfe_print_t;
+} // namespace SparkFun_SSD168x
 
-#endif // SFE_ESP_IDF
+#endif // SFE_SSD168X_ESP_IDF

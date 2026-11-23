@@ -48,7 +48,7 @@
 #include "qwiic_ssd1681_custom.h"
 #include "qwiic_ssd1680_184x88_rotated.h"
 
-#if defined(SFE_ESP_IDF)
+#if defined(SFE_SSD168X_ESP_IDF)
 #include <stdarg.h>
 #endif
 
@@ -60,7 +60,7 @@ typedef QwEpBitmap QwiicEpBitmap;
 //   COLOR_ON  = 1 indicates the pixel is 'on': black on e-paper (inverted)
 //   COLOR_OFF = 0 indicates the pixel is 'off': white on e-paper (inverted)
 
-#if defined(SFE_ESP_IDF)
+#if defined(SFE_SSD168X_ESP_IDF)
 
 /**
  * @brief A minimal equivalent of the Arduino Print class, for native ESP-IDF.
@@ -219,6 +219,11 @@ typedef Print SSD168xPrintBase; // The base class for the text output: Arduino P
  */
 template <typename DeviceType> class SSD168xSPIBaseClass : public SSD168xPrintBase
 {
+  public:
+    // The platform types, from namespace SparkFun_SSD168x (see sfe_platform.h and sfe_bus.h)
+    typedef SparkFun_SSD168x::sfe_print_t sfe_print_t;   ///< The print type: Print on Arduino; SfeOutput on ESP-IDF
+    typedef SparkFun_SSD168x::sfe_string_t sfe_string_t; ///< The string type: String on Arduino; std::string on ESP-IDF
+
   protected:
     // our device driver
     DeviceType m_device;
@@ -262,7 +267,7 @@ template <typename DeviceType> class SSD168xSPIBaseClass : public SSD168xPrintBa
     }
 
   public:
-#if defined(SFE_ARDUINO)
+#if defined(SFE_SSD168X_ARDUINO)
 
     ///////////////////////////////////////////////////////////////////////
     // begin()
@@ -313,7 +318,7 @@ template <typename DeviceType> class SSD168xSPIBaseClass : public SSD168xPrintBa
         m_device.enableDebugging(debugPort, printLimitedDebug);
     }
 
-#elif defined(SFE_ESP_IDF)
+#elif defined(SFE_SSD168X_ESP_IDF)
 
     /**
      * @brief Initialize the SSD168x library and the e-Paper display, using an SPI bus initialized by the user.
@@ -942,7 +947,7 @@ template <typename DeviceType> class SSD168xSPIBaseClass : public SSD168xPrintBa
         return 1;
     }
 
-#if defined(SFE_ARDUINO)
+#if defined(SFE_SSD168X_ARDUINO)
     using Print::write; // Also allow write(const uint8_t *buffer, size_t size) etc.
 #endif
 };

@@ -18,6 +18,8 @@
 
 #include "spi_ssd1680.h"
 
+using namespace SparkFun_SSD168x; // The platform helpers (sfe_millis() etc.) are in this namespace
+
 /////////////////////////////////////////////////////////////////////////////
 // Class that implements graphics support for devices that use the SSD1680
 //
