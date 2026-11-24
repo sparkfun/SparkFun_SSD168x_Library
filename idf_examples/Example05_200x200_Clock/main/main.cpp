@@ -108,6 +108,7 @@ const char * platform = "SparkFun RockBLOCK 9604 Shield";
 
 static void setup()
 {
+    // Give the native USB serial port time to (re)connect, so the console does not miss the first messages
     delay(1000);
     
     printf("Running SSD168x example on %s\n", platform);
